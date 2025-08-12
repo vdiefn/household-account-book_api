@@ -24,8 +24,21 @@ db.once("open", () => {
 app.use(cors())
 app.use(express.json())
 
-app.get("/", (req, res)=> {
-  res.send("Hello from backend api!")
+// app.get("/", (req, res)=> {
+//   res.send("Hello from backend api!")
+// })
+
+app.get("/", async(req, res) => {
+  try {
+    const records = await Record.find()
+    return res.status(201).json({
+      message: "查詢成功",
+      records
+    })
+  } catch(err){
+    console.error(err)
+    return res.status(400).send({error: err.message})
+  }
 })
 
 app.post("/record", async(req, res) => {
@@ -40,6 +53,30 @@ app.post("/record", async(req, res) => {
   } catch(err){
     console.error(err)
     return res.status(400).send({error: err.message})
+  }
+})
+
+app.put("/records/:id", async(req, res) => {
+  const id = req.params.id
+  const { title, amount, type, date, note } = req.body
+
+  try {
+    const record = await Record.findByIdAndUpdate(
+      id,
+      { title, amount, type, date, note, updatedAt: new Date() }
+    )
+
+    if(!record) {
+      return res.status(404).json({message: "找不到該筆資料"})
+    }
+
+    return res.status(200).json({
+      message: "修改成功",
+      record
+    })
+  } catch(err){
+    console.error(err)
+    return res.status(400).json({error: err.message})
   }
 })
 
