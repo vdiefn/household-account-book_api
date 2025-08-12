@@ -28,9 +28,9 @@ app.use(express.json())
 //   res.send("Hello from backend api!")
 // })
 
-app.get("/", async(req, res) => {
+app.get("/records", async(req, res) => {
   try {
-    const records = await Record.find()
+    const records = await Record.find().lean()
     return res.status(201).json({
       message: "查詢成功",
       records
@@ -61,22 +61,39 @@ app.put("/records/:id", async(req, res) => {
   const { title, amount, type, date, note } = req.body
 
   try {
-    const record = await Record.findByIdAndUpdate(
+    const editRecord = await Record.findByIdAndUpdate(
       id,
-      { title, amount, type, date, note, updatedAt: new Date() }
+      { title, amount, type, date, note, updatedAt: new Date() },
+      { new: true}
     )
 
-    if(!record) {
+    if(!editRecord) {
       return res.status(404).json({message: "找不到該筆資料"})
     }
 
     return res.status(200).json({
       message: "修改成功",
-      record
+      editRecord,
     })
   } catch(err){
     console.error(err)
     return res.status(400).json({error: err.message})
+  }
+})
+
+app.delete("/records/:id", async(req, res) => {
+  const id = req.params.id
+  try {
+    const result = await Record.deleteOne({_id:id})
+
+    if(result.deletedCount === 0){
+      return res.status(404).json({message: "找不到該筆資料"})
+    }
+
+    return res.status(200).json({message: "刪除成功"})
+  } catch(err){
+    console.error(err)
+    return res.status(404).json({error: err.message})
   }
 })
 
