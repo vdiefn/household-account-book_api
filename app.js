@@ -24,14 +24,11 @@ db.once("open", () => {
 app.use(cors())
 app.use(express.json())
 
-// app.get("/", (req, res)=> {
-//   res.send("Hello from backend api!")
-// })
 
 app.get("/records", async(req, res) => {
   try {
-    const records = await Record.find().lean()
-    return res.status(201).json({
+    const records = await Record.find().lean().sort({date:"desc"})
+    return res.status(200).json({
       message: "查詢成功",
       records
     })
