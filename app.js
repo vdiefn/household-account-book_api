@@ -3,7 +3,6 @@ const cors = require("cors")
 const app = express()
 const Record = require("./models/record")
 require("./config/mongoose")
-
 const port = process.env.port || 3000
 
 app.use(cors())
@@ -11,15 +10,53 @@ app.use(express.json())
 
 
 app.get("/records", async(req, res) => {
+  const { selectType, startDate, endDate, selectItems } = req.query
+  const query = {}
+
+  if(selectType) {
+    const type = Array.isArray(selectType)? selectType : [selectType]
+    query.type = {$in: type}
+  }
+
+  if(startDate || endDate){
+    query.date = {}
+    if(startDate) {
+      query.date.$gte = new Date(startDate)
+    }
+    if(endDate) {
+      const end = new Date(endDate)
+      end.setHours(23, 59, 59, 999)
+      query.date.$lte = end
+    }
+  }
+
+  if(selectItems) {
+    const item = Array.isArray(selectItems)? selectItems : [selectItems]
+    query.title = { $in: item }
+  }
+
   try {
-    const records = await Record.find().lean().sort({date:"desc"})
+    const records = await Record.find(query).lean().sort({date:"desc"})
     return res.status(200).json({
       message: "查詢成功",
       records
     })
   } catch(err){
     console.error(err)
-    return res.status(400).send({error: err.message})
+    return res.status(400).json({error: err.message})
+  }
+})
+
+app.get("/titles", async(req, res) => {
+  try{
+    const titles = await Record.distinct("title")
+    return res.status(200).json({
+      message:"查詢成功",
+      titles
+    })
+  } catch(err){
+    console.error(err)
+    return res.status(400).json({error: err.message})
   }
 })
 
@@ -34,7 +71,7 @@ app.post("/record", async(req, res) => {
     })
   } catch(err){
     console.error(err)
-    return res.status(400).send({error: err.message})
+    return res.status(400).json({error: err.message})
   }
 })
 
