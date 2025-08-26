@@ -9,9 +9,17 @@ export const formatDate = (date) => {
 };
 
 export const getStartOfMonth = () => {
-  return dayjs().startOf("month").format("YYYY-MM-DD");
+  return dayjs().startOf("month").toDate();
 };
 
 export const getEndOfMonth = () => {
-  return dayjs().endOf("month").format("YYYY-MM-DD");
+  return dayjs().endOf("month").toDate();
 };
+
+export const getStartOfWeek = () => {
+  return dayjs().startOf("week").toDate()
+}
+
+export const getEndOfWeek = () => {
+  return dayjs().endOf("week").toDate()
+}
