@@ -23,3 +23,7 @@ export const getStartOfWeek = () => {
 export const getEndOfWeek = () => {
   return dayjs().endOf("week").toDate()
 }
+
+export const getDaysInMonth = () => {
+  return dayjs().daysInMonth()
+}
