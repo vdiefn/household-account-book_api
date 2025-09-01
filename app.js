@@ -4,7 +4,14 @@ const app = express()
 require("./config/mongoose")
 const port = process.env.port || 3000
 const routes = require("./routes")
+const session = require("express-session")
 
+
+app.use(session({
+  secret: "ThisIsMySecret",
+  resave: false,
+  saveUninitialized: true
+}))
 app.use(cors())
 app.use(express.json())
 app.use(routes)
