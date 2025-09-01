@@ -8,6 +8,6 @@ const user = require("./modules/user")
 router.use("/records", record)
 router.use("/categories", category)
 router.use("/summary", summary)
-router.use("/user", user)
+router.use("/users", user)
 
 module.exports = router
