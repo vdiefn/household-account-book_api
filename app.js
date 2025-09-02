@@ -7,14 +7,15 @@ const routes = require("./routes")
 const session = require("express-session")
 const usePassport = require("./config/passport")
 
-usePassport(app)
-app.use(session({
-  secret: "ThisIsMySecret",
-  resave: false,
-  saveUninitialized: true
-}))
+
 app.use(cors())
 app.use(express.json())
+// app.use(session({
+//   secret: "ThisIsMySecret",
+//   resave: false,
+//   saveUninitialized: true
+// }))
+usePassport(app)
 app.use(routes)
 
 app.listen(port, () => {
