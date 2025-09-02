@@ -5,8 +5,9 @@ require("./config/mongoose")
 const port = process.env.port || 3000
 const routes = require("./routes")
 const session = require("express-session")
+const usePassport = require("./config/passport")
 
-
+usePassport(app)
 app.use(session({
   secret: "ThisIsMySecret",
   resave: false,
