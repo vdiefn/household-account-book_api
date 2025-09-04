@@ -24,22 +24,35 @@ router.post("/register", async(req, res) => {
   }
 })
 
-router.post("/login", passport.authenticate("local", { session:false }), (req, res) => {
-  try {
-    const userData = req.user.toJSON()
-    delete userData.password
-    const token = jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: "30d"})
-    res.json({
-      status: "success",
-      data: {
+router.post("/login", (req, res, next) => {
+  passport.authenticate("local", { session:false }, (err, user, info) => {
+    if(err) {
+      return res.status(500).json({
+        status: "error",
+        error: err.message || "Server error"
+      })
+    }
+
+    if(!user) {
+      return res.status(401).json({
+        status: "error",
+        error: info.message || "Unauthorized"
+      })
+    }
+
+    try {
+      const userData = user.toJSON()
+      delete userData.password
+      const token = jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: "30d"})
+      res.status(200).json({
+        status: "success",
         token,
         user: userData
-      }
-    })
-  } catch(err) {
-    return res.status(500).json({error: err.message})
-  }
-})
+      })
+    } catch(err) {
+      return res.status(500).json({error: err.message})
+    }
+})(req, res, next)})
 
 router.get("/logout", (req, res) => {
   return res.json({
