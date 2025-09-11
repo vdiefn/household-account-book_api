@@ -3,7 +3,7 @@ const express = require("express")
 const router = express.Router()
 const passport = require("passport")
 const jwt = require("jsonwebtoken")
-const bcrypct = require("bcryptjs")
+const bcrypt = require("bcryptjs")
 
 
 router.post("/register", async(req, res) => {
@@ -13,7 +13,9 @@ router.post("/register", async(req, res) => {
     if(existingUser) {
       return res.status(400).json({message: "user already exist"})
     }
-    const newUser = await User.create({email, name, password})
+    const salt = await bcrypt.genSalt(10)
+    const hash = bcrypt.hash(password, salt)
+    const newUser = await User.create({email, name, password: hash})
     return res.json({
       status: "success",
       message: "user created successfully",
