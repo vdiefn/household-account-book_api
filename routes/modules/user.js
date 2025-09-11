@@ -3,6 +3,7 @@ const express = require("express")
 const router = express.Router()
 const passport = require("passport")
 const jwt = require("jsonwebtoken")
+const bcrypct = require("bcryptjs")
 
 
 router.post("/register", async(req, res) => {
@@ -44,7 +45,7 @@ router.post("/login", (req, res, next) => {
       const userData = user.toJSON()
       delete userData.password
       const token = jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: "30d"})
-      res.status(200).json({
+      return res.status(200).json({
         status: "success",
         token,
         user: userData
