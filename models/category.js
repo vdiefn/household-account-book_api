@@ -5,7 +5,15 @@ const categorySchema = new Schema({
     type: String,
     required: true
   },
-  icon: String
-})
+  icon: String,
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  }
+},{
+    timestamps: true,
+    versionKey: false
+  })
 
 module.exports = mongoose.model("Category", categorySchema)

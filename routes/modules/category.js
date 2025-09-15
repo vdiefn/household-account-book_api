@@ -4,7 +4,8 @@ const Category = require("../../models/category")
 
 router.get("/", async(req, res) => {
   try{
-    const categories = await Category.find().select("-__v")
+    const categories = await Category.find({user: req.user._id}).select("-__v")
+
     return res.status(200).json({
       message:"查詢成功",
       categories
